@@ -1,8 +1,10 @@
 import { router, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
+import { useTrans } from '@/hooks/use-trans';
 
 export function LanguageToggle() {
     const { locale } = usePage().props;
+    const { t } = useTrans();
 
     const toggleLocale = () => {
         const newLocale = locale === 'ja' ? 'en' : 'ja';
@@ -13,13 +15,16 @@ export function LanguageToggle() {
         );
     };
 
+    const label = locale === 'ja' ? 'Switch to English' : '日本語に切り替え';
+
     return (
         <Button
             variant="ghost"
             size="icon"
             className="h-9 w-9 cursor-pointer text-base"
             onClick={toggleLocale}
-            title={locale === 'ja' ? 'Switch to English' : '日本語に切り替え'}
+            title={label}
+            aria-label={label}
         >
             {locale === 'ja' ? '🇺🇸' : '🇯🇵'}
         </Button>

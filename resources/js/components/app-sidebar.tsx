@@ -13,51 +13,54 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useTrans } from '@/hooks/use-trans';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Clients',
-        href: '/clients',
-        icon: Users,
-    },
-    {
-        title: 'Invoices',
-        href: '/invoices',
-        icon: FileText,
-    },
-    {
-        title: 'Recurring',
-        href: '/recurring-invoices',
-        icon: RefreshCw,
-    },
-    {
-        title: 'Settings',
-        href: '/settings',
-        icon: Settings,
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
-
 export function AppSidebar() {
+    const { t } = useTrans();
+
+    const mainNavItems: NavItem[] = [
+        {
+            title: t('navigation.dashboard'),
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        {
+            title: t('navigation.clients'),
+            href: '/clients',
+            icon: Users,
+        },
+        {
+            title: t('navigation.invoices'),
+            href: '/invoices',
+            icon: FileText,
+        },
+        {
+            title: t('navigation.recurring'),
+            href: '/recurring-invoices',
+            icon: RefreshCw,
+        },
+        {
+            title: t('navigation.settings'),
+            href: '/settings',
+            icon: Settings,
+        },
+    ];
+
+    const footerNavItems: NavItem[] = [
+        {
+            title: t('navigation.repository'),
+            href: 'https://github.com/laravel/react-starter-kit',
+            icon: FolderGit2,
+        },
+        {
+            title: t('navigation.documentation'),
+            href: 'https://laravel.com/docs/starter-kits#react',
+            icon: BookOpen,
+        },
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
