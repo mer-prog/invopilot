@@ -46,8 +46,13 @@ class InvoiceController extends Controller
         }
 
         if ($request->filled('sort')) {
-            $direction = $request->input('direction', 'desc');
-            $query->reorder($request->input('sort'), $direction);
+            $allowedSortColumns = ['invoice_number', 'issue_date', 'due_date', 'status', 'total'];
+            $sortColumn = $request->input('sort');
+
+            if (in_array($sortColumn, $allowedSortColumns, true)) {
+                $direction = $request->input('direction', 'desc');
+                $query->reorder($sortColumn, $direction);
+            }
         }
 
         return Inertia::render('invoices/index', [
