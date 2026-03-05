@@ -12,22 +12,30 @@ services:
         value: production
       - key: APP_DEBUG
         value: "false"
+      - key: APP_KEY
+        sync: false
       - key: APP_URL
         fromRenderService:
           type: web
           name: invopilot
           property: url
       - key: DB_CONNECTION
-        value: sqlite
+        value: pgsql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
       - key: DB_DATABASE
-        value: /var/www/html/database/database.sqlite
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
       - key: SESSION_DRIVER
-        value: file
+        value: database
       - key: CACHE_STORE
-        value: file
+        value: database
       - key: QUEUE_CONNECTION
         value: sync
       - key: MAIL_MAILER
         value: log
-      - key: APP_KEY
-        generateValue: true
