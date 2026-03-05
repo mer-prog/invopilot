@@ -135,18 +135,23 @@ it('sends a draft invoice', function () {
     expect($invoice->sent_at)->not->toBeNull();
 });
 
-it('marks an invoice as paid', function () {
+it('records a payment and marks an invoice as paid', function () {
     $invoice = Invoice::factory()->sent()->create([
         'organization_id' => $this->organization->id,
         'client_id' => $this->client->id,
+        'total' => 1000,
     ]);
 
-    $this->post("/invoices/{$invoice->id}/mark-paid")
-        ->assertRedirect();
+    $this->post("/invoices/{$invoice->id}/mark-paid", [
+        'amount' => 1000,
+        'method' => 'bank_transfer',
+        'paid_at' => '2026-03-05',
+    ])->assertRedirect();
 
     $invoice->refresh();
     expect($invoice->status)->toBe(InvoiceStatus::Paid);
     expect($invoice->paid_at)->not->toBeNull();
+    expect($invoice->payments)->toHaveCount(1);
 });
 
 it('duplicates an invoice', function () {

@@ -41,6 +41,7 @@ return [
     'empty_description' => '最初の請求書を作成しましょう。',
     'sent_successfully' => '請求書を送信しました。',
     'marked_paid' => '支払済に更新しました。',
+    'payment_recorded' => '入金を記録しました。',
     'duplicated' => '請求書を複製しました。',
     'cancelled' => '請求書をキャンセルしました。',
 ];

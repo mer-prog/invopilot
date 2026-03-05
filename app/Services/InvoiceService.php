@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\InvoiceStatus;
+use App\Events\InvoiceCreated;
+use App\Events\InvoiceSent;
+use App\Events\PaymentRecorded;
+use App\Jobs\SendInvoiceEmail;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Organization;
+use App\Models\Payment;
 
 class InvoiceService
 {
@@ -29,6 +34,8 @@ class InvoiceService
 
         $this->syncItems($invoice, $items);
         $this->recalculateTotals($invoice);
+
+        InvoiceCreated::dispatch($invoice);
 
         return $invoice;
     }
@@ -97,10 +104,29 @@ class InvoiceService
 
     public function sendInvoice(Invoice $invoice): void
     {
+        SendInvoiceEmail::dispatch($invoice);
+
         $invoice->update([
             'status' => InvoiceStatus::Sent,
             'sent_at' => now(),
         ]);
+
+        InvoiceSent::dispatch($invoice);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public function recordPayment(Invoice $invoice, array $data): Payment
+    {
+        $payment = Payment::query()->create([
+            'invoice_id' => $invoice->id,
+            ...$data,
+        ]);
+
+        PaymentRecorded::dispatch($payment, $invoice);
+
+        return $payment;
     }
 
     public function markPaid(Invoice $invoice): void

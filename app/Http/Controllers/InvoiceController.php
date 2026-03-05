@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RecordPaymentRequest;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Organization;
 use App\Services\InvoiceService;
+use App\Services\PdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -145,13 +148,13 @@ class InvoiceController extends Controller
         return back()->with('success', __('invoices.sent_successfully'));
     }
 
-    public function markPaid(Invoice $invoice): RedirectResponse
+    public function markPaid(RecordPaymentRequest $request, Invoice $invoice): RedirectResponse
     {
         $this->authorizeAction('markPaid', $invoice);
 
-        $this->invoiceService->markPaid($invoice);
+        $this->invoiceService->recordPayment($invoice, $request->validated());
 
-        return back()->with('success', __('invoices.marked_paid'));
+        return back()->with('success', __('invoices.payment_recorded'));
     }
 
     public function duplicate(Invoice $invoice): RedirectResponse
@@ -165,11 +168,11 @@ class InvoiceController extends Controller
             ->with('success', __('invoices.duplicated'));
     }
 
-    public function pdf(Invoice $invoice): void
+    public function pdf(Invoice $invoice, PdfService $pdfService): HttpResponse
     {
         $this->authorizeAction('view', $invoice);
 
-        abort(501, 'PDF generation will be implemented with dompdf.');
+        return $pdfService->downloadInvoicePdf($invoice);
     }
 
     private function authorizeAction(string $ability, Invoice|string $invoiceOrClass): void

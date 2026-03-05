@@ -41,6 +41,7 @@ return [
     'empty_description' => 'Create your first invoice to get started.',
     'sent_successfully' => 'Invoice sent successfully.',
     'marked_paid' => 'Invoice marked as paid.',
+    'payment_recorded' => 'Payment recorded successfully.',
     'duplicated' => 'Invoice duplicated.',
     'cancelled' => 'Invoice cancelled.',
 ];

@@ -16,6 +16,8 @@ export type Client = {
 
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
 
+export type PaymentMethod = 'bank_transfer' | 'credit_card' | 'cash' | 'check' | 'other';
+
 export type InvoiceItem = {
     id?: number;
     description: string;
@@ -60,6 +62,31 @@ export type Payment = {
     notes: string | null;
     created_at: string;
     updated_at: string;
+};
+
+export type Frequency = 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
+
+export type RecurringInvoiceItem = {
+    description: string;
+    quantity: number;
+    unit_price: number;
+};
+
+export type RecurringInvoice = {
+    id: number;
+    organization_id: number;
+    client_id: number;
+    frequency: Frequency;
+    next_issue_date: string;
+    end_date: string | null;
+    items: RecurringInvoiceItem[];
+    notes: string | null;
+    tax_rate: string;
+    is_active: boolean;
+    last_generated_at: string | null;
+    created_at: string;
+    updated_at: string;
+    client?: Client;
 };
 
 export type PaginatedData<T> = {

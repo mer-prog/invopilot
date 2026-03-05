@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, FileText, FolderGit2, LayoutGrid, Users } from 'lucide-react';
+import { BookOpen, FileText, FolderGit2, LayoutGrid, RefreshCw, Users } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -31,6 +31,11 @@ const mainNavItems: NavItem[] = [
         title: 'Invoices',
         href: '/invoices',
         icon: FileText,
+    },
+    {
+        title: 'Recurring',
+        href: '/recurring-invoices',
+        icon: RefreshCw,
     },
 ];
 
