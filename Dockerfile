@@ -29,7 +29,6 @@ RUN npm run build
 FROM php:8.4-cli-alpine
 
 RUN apk add --no-cache \
-    sqlite-libs \
     libpq \
     icu-libs \
     freetype \
@@ -44,7 +43,7 @@ RUN apk add --no-cache \
     libpng-dev \
     libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_pgsql pdo_sqlite intl gd zip bcmath \
+    && docker-php-ext-install pdo_pgsql intl gd zip bcmath \
     && apk del .build-deps
 
 WORKDIR /var/www/html
