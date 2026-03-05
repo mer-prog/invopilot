@@ -89,6 +89,29 @@ export type RecurringInvoice = {
     client?: Client;
 };
 
+export type DashboardStats = {
+    this_month_revenue: number;
+    last_month_revenue: number;
+    growth_rate: number;
+    outstanding: number;
+    overdue_count: number;
+    new_clients: number;
+    total_clients: number;
+};
+
+export type MonthlyRevenue = {
+    month: string;
+    revenue: number;
+};
+
+export type ActivityLogEntry = {
+    id: number;
+    action: string;
+    description: string;
+    created_at: string;
+    user?: { id: number; name: string } | null;
+};
+
 export type PaginatedData<T> = {
     data: T[];
     links: {
