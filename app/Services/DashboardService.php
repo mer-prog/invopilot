@@ -76,12 +76,17 @@ class DashboardService
         $now = now();
         $start = $now->copy()->subMonths(11)->startOfMonth();
 
+        $driver = Invoice::query()->getConnection()->getDriverName();
+        $dateExpr = $driver === 'sqlite'
+            ? "strftime('%Y-%m', paid_at)"
+            : "to_char(paid_at, 'YYYY-MM')";
+
         $results = Invoice::query()
             ->forOrganization($organizationId)
             ->where('status', InvoiceStatus::Paid)
             ->where('paid_at', '>=', $start)
-            ->selectRaw("to_char(paid_at, 'YYYY-MM') as month, SUM(total) as revenue")
-            ->groupByRaw("to_char(paid_at, 'YYYY-MM')")
+            ->selectRaw("{$dateExpr} as month, SUM(total) as revenue")
+            ->groupByRaw($dateExpr)
             ->pluck('revenue', 'month');
 
         $data = [];

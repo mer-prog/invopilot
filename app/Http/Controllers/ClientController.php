@@ -95,13 +95,4 @@ class ClientController extends Controller
         return redirect()->route('clients.index')
             ->with('success', __('common.successfully_deleted', ['item' => __('clients.singular')]));
     }
-
-    private function authorize(string $ability, Client|string $clientOrClass): void
-    {
-        if (is_string($clientOrClass)) {
-            abort_unless(auth()->user()?->can($ability, $clientOrClass), 403);
-        } else {
-            abort_unless(auth()->user()?->can($ability, $clientOrClass), 403);
-        }
-    }
 }
