@@ -65,14 +65,20 @@ class ClientApiController extends Controller
         return response()->json(null, 204);
     }
 
+    private ?int $resolvedOrganizationId = null;
+
     private function resolveOrganizationId(Request $request): int
     {
+        if ($this->resolvedOrganizationId !== null) {
+            return $this->resolvedOrganizationId;
+        }
+
         $user = $request->user();
         $organization = $user->organizations()->first();
 
         abort_unless($organization, 403, 'No organization found.');
 
-        return $organization->id;
+        return $this->resolvedOrganizationId = $organization->id;
     }
 
     private function ensureOwnership(Request $request, Client $client): void
