@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 import {
     Table,
     TableBody,
@@ -56,6 +56,17 @@ export function DataTable<T>({
                                     : undefined
                             }
                             onClick={() => onRowClick?.(item)}
+                            onKeyDown={(e: KeyboardEvent) => {
+                                if (
+                                    (e.key === 'Enter' || e.key === ' ') &&
+                                    onRowClick
+                                ) {
+                                    e.preventDefault();
+                                    onRowClick(item);
+                                }
+                            }}
+                            tabIndex={onRowClick ? 0 : undefined}
+                            role={onRowClick ? 'button' : undefined}
                         >
                             {columns.map((col) => (
                                 <TableCell
