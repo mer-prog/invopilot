@@ -1,30 +1,33 @@
 # ============================================================
-# Stage 1: Composer dependencies
+# Stage 1: Build (composer + node in one stage)
 # ============================================================
-FROM composer:2 AS composer
+FROM php:8.4-cli-alpine AS build
+
+# Install Node.js
+RUN apk add --no-cache nodejs npm
+
+# Install PHP extensions needed for artisan commands during build
+RUN apk add --no-cache postgresql-dev icu-dev \
+    && docker-php-ext-install pdo_pgsql intl bcmath
 
 WORKDIR /app
+
+# Composer install
 COPY composer.json composer.lock ./
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --optimize-autoloader
 
-COPY . .
-RUN composer dump-autoload --optimize
-
-# ============================================================
-# Stage 2: Node build (frontend assets)
-# ============================================================
-FROM node:22-alpine AS node
-
-WORKDIR /app
+# Node install
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 
+# Copy all files, then finalize builds
 COPY . .
-COPY --from=composer /app/vendor ./vendor
+RUN composer dump-autoload --optimize
 RUN npm run build
 
 # ============================================================
-# Stage 3: Production runtime
+# Stage 2: Production runtime
 # ============================================================
 FROM php:8.4-cli-alpine
 
@@ -48,8 +51,8 @@ RUN apk add --no-cache \
 
 WORKDIR /var/www/html
 
-COPY --from=composer /app/vendor ./vendor
-COPY --from=node /app/public/build ./public/build
+COPY --from=build /app/vendor ./vendor
+COPY --from=build /app/public/build ./public/build
 COPY . .
 
 RUN mkdir -p storage/framework/{sessions,views,cache} \
