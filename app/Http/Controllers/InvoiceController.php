@@ -24,7 +24,7 @@ class InvoiceController extends Controller
 
     public function index(Request $request): Response
     {
-        $this->authorizeAction('viewAny', Invoice::class);
+        $this->authorize('viewAny', Invoice::class);
 
         $orgId = (int) session('current_organization_id');
 
@@ -63,7 +63,7 @@ class InvoiceController extends Controller
 
     public function create(): Response
     {
-        $this->authorizeAction('create', Invoice::class);
+        $this->authorize('create', Invoice::class);
 
         $orgId = (int) session('current_organization_id');
         $organization = Organization::query()->findOrFail($orgId);
@@ -77,7 +77,7 @@ class InvoiceController extends Controller
 
     public function store(StoreInvoiceRequest $request): RedirectResponse
     {
-        $this->authorizeAction('create', Invoice::class);
+        $this->authorize('create', Invoice::class);
 
         $orgId = (int) session('current_organization_id');
         $organization = Organization::query()->findOrFail($orgId);
@@ -95,7 +95,7 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice): Response
     {
-        $this->authorizeAction('view', $invoice);
+        $this->authorize('view', $invoice);
 
         $invoice->load(['client', 'items', 'payments']);
 
@@ -106,7 +106,7 @@ class InvoiceController extends Controller
 
     public function edit(Invoice $invoice): Response
     {
-        $this->authorizeAction('update', $invoice);
+        $this->authorize('update', $invoice);
 
         $orgId = (int) session('current_organization_id');
 
@@ -120,7 +120,7 @@ class InvoiceController extends Controller
 
     public function update(UpdateInvoiceRequest $request, Invoice $invoice): RedirectResponse
     {
-        $this->authorizeAction('update', $invoice);
+        $this->authorize('update', $invoice);
 
         $validated = $request->validated();
 
@@ -136,7 +136,7 @@ class InvoiceController extends Controller
 
     public function destroy(Invoice $invoice): RedirectResponse
     {
-        $this->authorizeAction('delete', $invoice);
+        $this->authorize('delete', $invoice);
 
         $invoice->delete();
 
@@ -146,7 +146,7 @@ class InvoiceController extends Controller
 
     public function send(Invoice $invoice): RedirectResponse
     {
-        $this->authorizeAction('send', $invoice);
+        $this->authorize('send', $invoice);
 
         $this->invoiceService->sendInvoice($invoice);
 
@@ -155,7 +155,7 @@ class InvoiceController extends Controller
 
     public function markPaid(RecordPaymentRequest $request, Invoice $invoice): RedirectResponse
     {
-        $this->authorizeAction('markPaid', $invoice);
+        $this->authorize('markPaid', $invoice);
 
         $this->invoiceService->recordPayment($invoice, $request->validated());
 
@@ -164,7 +164,7 @@ class InvoiceController extends Controller
 
     public function duplicate(Invoice $invoice): RedirectResponse
     {
-        $this->authorizeAction('view', $invoice);
+        $this->authorize('view', $invoice);
 
         $invoice->load('items');
         $newInvoice = $this->invoiceService->duplicateInvoice($invoice);
@@ -175,17 +175,8 @@ class InvoiceController extends Controller
 
     public function pdf(Invoice $invoice, PdfService $pdfService): HttpResponse
     {
-        $this->authorizeAction('view', $invoice);
+        $this->authorize('view', $invoice);
 
         return $pdfService->downloadInvoicePdf($invoice);
-    }
-
-    private function authorizeAction(string $ability, Invoice|string $invoiceOrClass): void
-    {
-        if (is_string($invoiceOrClass)) {
-            abort_unless(auth()->user()?->can($ability, $invoiceOrClass), 403);
-        } else {
-            abort_unless(auth()->user()?->can($ability, $invoiceOrClass), 403);
-        }
     }
 }
