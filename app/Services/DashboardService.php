@@ -73,23 +73,26 @@ class DashboardService
      */
     public function getMonthlyRevenue(int $organizationId): array
     {
-        $data = [];
         $now = now();
+        $start = $now->copy()->subMonths(11)->startOfMonth();
+
+        $results = Invoice::query()
+            ->forOrganization($organizationId)
+            ->where('status', InvoiceStatus::Paid)
+            ->where('paid_at', '>=', $start)
+            ->selectRaw("to_char(paid_at, 'YYYY-MM') as month, SUM(total) as revenue")
+            ->groupByRaw("to_char(paid_at, 'YYYY-MM')")
+            ->pluck('revenue', 'month');
+
+        $data = [];
 
         for ($i = 11; $i >= 0; $i--) {
             $date = $now->copy()->subMonths($i);
-            $start = $date->copy()->startOfMonth();
-            $end = $date->copy()->endOfMonth();
-
-            $revenue = (float) Invoice::query()
-                ->forOrganization($organizationId)
-                ->where('status', InvoiceStatus::Paid)
-                ->whereBetween('paid_at', [$start, $end])
-                ->sum('total');
+            $month = $date->format('Y-m');
 
             $data[] = [
-                'month' => $date->format('Y-m'),
-                'revenue' => $revenue,
+                'month' => $month,
+                'revenue' => (float) ($results[$month] ?? 0),
             ];
         }
 
