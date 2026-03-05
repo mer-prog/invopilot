@@ -1,0 +1,15 @@
+node_modules
+vendor
+.git
+.github
+.env
+.env.local
+storage/logs/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/cache/*
+tests
+.claude
+docs
+*.md
+!README.md
